@@ -1,6 +1,6 @@
 
 module.exports = (sequelize, Sequelize) => {
-  const Episode = sequelize.define("Episode", {
+  const Episode = sequelize.define("episode", {
     name: {
       type: Sequelize.STRING,
       allowNull: false,
@@ -25,7 +25,7 @@ module.exports = (sequelize, Sequelize) => {
 
   // relation to Character (characters)
   Episode.associate = function(models) {
-    Episode.belongsToMany(models.Character, { through: 'EpisodeCharacter', foreignKey: 'episode_id', as: 'characters' });
+    Episode.belongsToMany(models.Character, { through: 'episode_characters', foreignKey: 'episode_id', as: 'characters' });
   };
 
   return Episode;

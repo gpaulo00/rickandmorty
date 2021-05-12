@@ -1,6 +1,6 @@
 
 module.exports = (sequelize, Sequelize) => {
-  const Location = sequelize.define("Location", {
+  const Location = sequelize.define("location", {
     name: {
       type: Sequelize.STRING,
       allowNull: false,

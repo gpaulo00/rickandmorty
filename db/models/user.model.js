@@ -2,7 +2,7 @@
 const crypto = require('crypto');
 
 module.exports = (sequelize, Sequelize) => {
-  const User = sequelize.define("User", {
+  const User = sequelize.define("user", {
     email: {
       type: Sequelize.STRING,
       allowNull: false,

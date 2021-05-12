@@ -3,7 +3,7 @@ const router = express.Router();
 
 const db = require("../db/connection");
 const Op = db.Sequelize.Op;
-const { Episodes } = db;
+const Episodes = db.episode;
 
 /* GET episodes listing. */
 router.get('/', async function(req, res, next) {
