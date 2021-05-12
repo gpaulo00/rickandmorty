@@ -28,8 +28,18 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    origin_id: Sequelize.INTEGER,
-    location_id: Sequelize.INTEGER,
+    origin_id: {
+      type: Sequelize.INTEGER,
+      get() {
+        return () => this.getDataValue('origin_id');
+      },
+    },
+    location_id: {
+      type: Sequelize.INTEGER,
+      get() {
+        return () => this.getDataValue('location_id');
+      },
+    },
   }, {
     timestamps: true,
     createdAt: 'created',

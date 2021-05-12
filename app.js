@@ -14,7 +14,9 @@ db.sequelize.sync().then(() => console.log("Database synced."));
 // load routes
 const verifyToken = require('./routes/verify-token');
 const indexRouter = require('./routes/index');
+const characterRouter = require('./routes/characters');
 const episodeRouter = require('./routes/episodes');
+const locationRouter = require('./routes/locations');
 const userRouter = require('./routes/users');
 
 const app = express();
@@ -32,6 +34,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/api', userRouter);
 app.use('/api/episode', verifyToken, episodeRouter);
+app.use('/api/character', verifyToken, characterRouter);
+app.use('/api/location', verifyToken, locationRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

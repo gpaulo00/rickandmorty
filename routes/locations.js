@@ -3,15 +3,15 @@ const router = express.Router();
 
 const db = require("../db/connection");
 const Op = db.Sequelize.Op;
-const { Episode } = db;
+const { Location } = db;
 
-/* GET episodes listing. */
+/* GET locations listing. */
 router.get('/', async function(req, res) {
   const q = req.query.q;
   const condition = q ? { q: { [Op.like]: `%${q}%` } } : null;
 
   try {
-    const data = await Episode.findAll({ where: condition });
+    const data = await Location.findAll({ where: condition });
     res.json(data);
   } catch (err) {
     res.status(500).json({
@@ -20,12 +20,12 @@ router.get('/', async function(req, res) {
   }
 });
 
-/* GET single episode . */
+/* GET single location . */
 router.get('/:id', async function(req, res) {
   const id = req.params.id;
 
   try {
-    const data = await Episode.findByPk(id, { include: 'characters' });
+    const data = await Location.findByPk(id, { include: 'residents' });
     res.json(data);
   } catch (err) {
     res.status(500).json({
