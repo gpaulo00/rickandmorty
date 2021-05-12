@@ -6,6 +6,7 @@ module.exports = (sequelize, Sequelize) => {
     email: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
     },
     password: {
       type: Sequelize.STRING,
@@ -48,6 +49,11 @@ module.exports = (sequelize, Sequelize) => {
   User.prototype.correctPassword = function(enteredPassword) {
     return User.encryptPassword(enteredPassword, this.salt()) === this.password();
   }
+
+  // relation to ApiKey
+  User.associate = function(models) {
+    User.hasMany(models.ApiKey, { foreignKey: 'user_id', as: 'api_keys' });
+  };
 
   return User;
 };

@@ -3,7 +3,7 @@ const router = express.Router();
 
 const db = require("../db/connection");
 const Op = db.Sequelize.Op;
-const { Episodes } = db;
+const { Episode } = db;
 
 /* GET episodes listing. */
 router.get('/', async function(req, res, next) {
@@ -11,7 +11,7 @@ router.get('/', async function(req, res, next) {
   const condition = q ? { q: { [Op.like]: `%${q}%` } } : null;
 
   try {
-    const data = await Episodes.findAll({ where: condition });
+    const data = await Episode.findAll({ where: condition });
     res.json(data);
   } catch (err) {
     res.status(500).json({

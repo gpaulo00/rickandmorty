@@ -9,13 +9,13 @@ require('dotenv').config();
 
 // load database
 const db = require("./db/connection");
-db.sequelize.sync({ force: true }).then(() => {
-  console.log("Drop and re-sync db.");
-});
+db.sequelize.sync().then(() => console.log("Database synced."));
 
 // load routes
+const verifyToken = require('./routes/verify-token');
 const indexRouter = require('./routes/index');
 const episodeRouter = require('./routes/episodes');
+const userRouter = require('./routes/users');
 
 const app = express();
 
@@ -30,7 +30,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/api/episode', episodeRouter);
+app.use('/api', userRouter);
+app.use('/api/episode', verifyToken, episodeRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -48,4 +49,5 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+console.log("listening..");
 module.exports = app;
