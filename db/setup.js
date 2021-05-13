@@ -19,7 +19,11 @@ const { Episode, Location, Character } = db;
       const response = await axios.get(`https://rickandmortyapi.com/api/location?page=${page}`);
       count = response.data.info.pages;
 
-      await Location.bulkCreate(response.data.results);
+      const data = response.data.results.map((item) => {
+        item.id = undefined;
+        return item;
+      });
+      await Location.bulkCreate(data);
       console.log(`seed: locations saved (page ${page})`);
       page += 1;
     } catch (err) {
@@ -36,7 +40,11 @@ const { Episode, Location, Character } = db;
       const response = await axios.get(`https://rickandmortyapi.com/api/episode?page=${page}`);
       count = response.data.info.pages;
 
-      await Episode.bulkCreate(response.data.results);
+      const data = response.data.results.map((item) => {
+        item.id = undefined;
+        return item;
+      });
+      await Episode.bulkCreate(data);
       console.log(`seed: episodes saved (page ${page})`);
       page += 1;
     } catch (err) {
@@ -55,6 +63,7 @@ const { Episode, Location, Character } = db;
 
       const prom = response.data.results.map((item) => {
         return (async () => {
+          item.id = undefined;
           const obj = Character.build(item);
 
           // check origin
