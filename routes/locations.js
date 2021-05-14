@@ -4,7 +4,7 @@ const Joi = require('@hapi/joi');
 const { getPagination, formatPage } = require("./pagination.js");
 const db = require("../db/connection");
 const Op = db.Sequelize.Op;
-const { Location } = db;
+const { Location, Character } = db;
 const router = express.Router();
 
 /* POST location. */
@@ -91,6 +91,40 @@ router.delete('/:id', async function(req, res) {
     if (data === 1) return res.json({ message: `Lugar ${id} ha sido eliminado!` });
 
     return res.json({ message: `Lugar ${id} no existe` });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message || 'Ha ocurrido un error',
+    });
+  }
+});
+
+/* DELETE resident from location */
+router.delete('/:id/resident/:resident', async function(req, res) {
+  const { id, resident } = req.params;
+
+  // eliminar
+  try {
+    const data = await Character.update({ location_id: null }, { where: { id: resident, location_id: id } });
+    if (data === 1) return res.json({ message: `Residente ${resident} ha sido eliminado!` });
+
+    return res.json({ message: `Residente ${resident} no existe` });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message || 'Ha ocurrido un error',
+    });
+  }
+});
+
+/* PUT resident to location */
+router.put('/:id/resident/:resident', async function(req, res) {
+  const { id, resident } = req.params;
+
+  // eliminar
+  try {
+    const data = await Character.update({ location_id: id }, { where: { id: resident } });
+    if (data === 1) return res.json({ message: `Residente ${resident} agregado!` });
+
+    return res.json({ message: `Personaje ${resident} no existe` });
   } catch (err) {
     res.status(500).json({
       message: err.message || 'Ha ocurrido un error',

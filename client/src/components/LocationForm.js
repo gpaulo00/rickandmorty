@@ -7,6 +7,14 @@ import Grid from '@material-ui/core/Grid';
 import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+
+import Avatar from '@material-ui/core/Avatar';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Remove from '@material-ui/icons/Delete';
+
 import { useParams } from 'react-router';
 import { Link as RouterLink } from "react-router-dom";
 import axios from 'axios';
@@ -45,6 +53,7 @@ class LocationForm extends React.Component {
       dimension: '',
       url: '',
       msg: '',
+      residents: [],
       loading: true,
 
       isNew,
@@ -56,31 +65,56 @@ class LocationForm extends React.Component {
   }
 
   componentDidMount() {
-    const { isNew, locationId } = this.state;
+    const { isNew } = this.state;
     if (!isNew) {
-      axios.get(`/api/location/${locationId}`, {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-ApiKey': this.props.token,
-        },
-      }).then((res) => {
-        const { name, type, dimension, url } = res.data.data;
-        this.setState({ name, tipe: type, dimension, url, loading: false });
-      }).catch((err) => {
-        let message = err.message;
-        if (err.response && err.response.data) {
-          message = err.response.data.message;
-        }
-        this.setState({ msg: message, loading: false });
-      });
+      this._fetchData();
     } else {
       this.setState({ loading: false });
     }
   }
 
+  _fetchData() {
+    const { locationId } = this.state;
+    return axios.get(`/api/location/${locationId}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-ApiKey': this.props.token,
+      },
+    }).then((res) => {
+      const { name, type, dimension, url, residents } = res.data.data;
+      this.setState({ name, tipe: type, dimension, url, residents, loading: false });
+    }).catch((err) => {
+      let message = err.message;
+      if (err.response && err.response.data) {
+        message = err.response.data.message;
+      }
+      this.setState({ msg: message, loading: false });
+    });
+  }
+
   handleItem(ev, item) {
     this.setState({ [item]: ev.target.value });
+  }
+
+  removeResident(id) {
+    this.setState({ loading: true });
+    const { locationId } = this.state;
+    const prom = axios.delete(`/api/location/${locationId}/resident/${id}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-ApiKey': this.props.token,
+      },
+    }).then(() => {
+      this._fetchData();
+    }).catch((err) => {
+      let message = err.message;
+      if (err.response && err.response.data) {
+        message = err.response.data.message;
+      }
+      this.setState({ msg: message, loading: false });
+    });
   }
 
   handleSave(ev) {
@@ -124,7 +158,7 @@ class LocationForm extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { name, tipe, dimension, url, msg, loading } = this.state;
+    const { name, tipe, dimension, url, msg, loading, residents } = this.state;
 
     const msgAlert = (
       msg && <Alert severity="info">{msg}</Alert>
@@ -181,6 +215,29 @@ class LocationForm extends React.Component {
                 value={url}
                 onChange={(ev) => this.handleItem(ev, "url")}
               />
+
+              <Typography component="h2" variant="h5" align="left">
+                Residentes
+              </Typography>
+
+              {(residents.length === 0) && (
+                <Typography component="h2" variant="h6" align="center">
+                  No tiene residentes asociados!
+                </Typography>
+              )}
+              <List component="nav" aria-label="main mailbox folders">
+                {residents.map((item) => (
+                  <ListItem key={item.id} button>
+                    <ListItemIcon>
+                      <Avatar alt={item.name} src={item.image} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.name}
+                    />
+                    <Remove onClick={() => this.removeResident(item.id)} />
+                  </ListItem>
+                ))}
+              </List>
 
               <Grid container direction="row-reverse" spacing={3}>
                 <Grid item>
