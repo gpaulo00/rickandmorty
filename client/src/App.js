@@ -27,6 +27,8 @@ import PlayIcon from '@material-ui/icons/PlayCircleFilled';
 
 import './App.css';
 import SignIn from './pages/SignIn.js';
+import Characters from './pages/Characters.js';
+import Episodes from './pages/Episodes';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -110,10 +112,10 @@ function App() {
           <Toolbar />
           <Switch>
             <Route path="/episode">
-              <div>episode</div>
+              <Episodes token={token} />
             </Route>
             <Route path="/character">
-              <div>character</div>
+              <Characters token={token} />
             </Route>
             <Route path="/">
               <div>locations</div>

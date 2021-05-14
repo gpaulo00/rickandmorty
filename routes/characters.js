@@ -1,18 +1,20 @@
 const express = require('express');
 const router = express.Router();
 
+const { getPagination, formatPage } = require("./pagination.js");
 const db = require("../db/connection");
 const Op = db.Sequelize.Op;
 const { Character } = db;
 
 /* GET characters listing. */
 router.get('/', async function(req, res) {
-  const q = req.query.q;
+  const { q, page } = req.query;
   const condition = q ? { q: { [Op.like]: `%${q}%` } } : null;
+  const { limit, offset } = getPagination(page);
 
   try {
-    const data = await Character.findAll({ where: condition });
-    res.json(data);
+    const data = await Character.findAndCountAll({ where: condition, limit, offset });
+    res.json(formatPage(data, page));
   } catch (err) {
     res.status(500).json({
       message: err.message || 'Ha ocurrido un error',
@@ -26,7 +28,7 @@ router.get('/:id', async function(req, res) {
 
   try {
     const data = await Character.findByPk(id, { include: ['episode', 'origin', 'location'] });
-    res.json(data);
+    res.json({ data });
   } catch (err) {
     res.status(500).json({
       message: err.message || 'Ha ocurrido un error',

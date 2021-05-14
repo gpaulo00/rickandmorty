@@ -1,6 +1,7 @@
 const express = require('express');
 const Joi = require('@hapi/joi');
 
+const { getPagination, formatPage } = require("./pagination.js");
 const db = require("../db/connection");
 const Op = db.Sequelize.Op;
 const { Location } = db;
@@ -27,7 +28,7 @@ router.post('/', async function(req, res) {
   const loc = { name, type, dimension, url };
   try {
     const data = await Location.create(loc);
-    res.json(data);
+    res.json({ data });
   } catch (err) {
     res.status(500).json({
       message: err.message || 'Ha ocurrido un error',
@@ -37,12 +38,13 @@ router.post('/', async function(req, res) {
 
 /* GET locations listing. */
 router.get('/', async function(req, res) {
-  const q = req.query.q;
+  const { q, page } = req.query;
   const condition = q ? { q: { [Op.like]: `%${q}%` } } : null;
+  const { limit, offset } = getPagination(page);
 
   try {
-    const data = await Location.findAll({ where: condition });
-    res.json(data);
+    const data = await Location.findAndCountAll({ where: condition, limit, offset });
+    res.json(formatPage(data, page));
   } catch (err) {
     res.status(500).json({
       message: err.message || 'Ha ocurrido un error',
@@ -56,7 +58,7 @@ router.get('/:id', async function(req, res) {
 
   try {
     const data = await Location.findByPk(id, { include: 'residents' });
-    res.json(data);
+    res.json({ data });
   } catch (err) {
     res.status(500).json({
       message: err.message || 'Ha ocurrido un error',
@@ -71,7 +73,7 @@ router.put('/:id', async function(req, res) {
   // update
   try {
     const data = await Location.update(req.body, { where: { id } });
-    res.json(data);
+    res.json({ data });
   } catch (err) {
     res.status(500).json({
       message: err.message || 'Ha ocurrido un error',
