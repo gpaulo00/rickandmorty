@@ -10,7 +10,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Link from '@material-ui/core/Link';
@@ -29,6 +28,7 @@ import './App.css';
 import SignIn from './pages/SignIn.js';
 import Characters from './pages/Characters.js';
 import Episodes from './pages/Episodes';
+import Locations from './pages/Locations';
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
@@ -58,8 +58,12 @@ function App() {
   const classes = useStyles();
   const [token, setToken] = useState();
 
-  if (!token) {
-    return <SignIn setToken={setToken}></SignIn>;
+  if (!token || token === "AUTH") {
+    return <SignIn setToken={setToken} status={token}></SignIn>;
+  }
+
+  const setUnauthorized = () => {
+    setToken("AUTH");
   }
   return (
     <Router>
@@ -73,7 +77,6 @@ function App() {
             <Typography variant="h6" className={classes.title}>
               Rick and Morty
             </Typography>
-            <Button color="inherit">Salir</Button>
           </Toolbar>
         </AppBar>
         <Drawer
@@ -112,13 +115,13 @@ function App() {
           <Toolbar />
           <Switch>
             <Route path="/episode">
-              <Episodes token={token} />
+              <Episodes token={token} onExpire={setUnauthorized} />
             </Route>
             <Route path="/character">
-              <Characters token={token} />
+              <Characters token={token} onExpire={setUnauthorized} />
             </Route>
             <Route path="/">
-              <div>locations</div>
+              <Locations token={token} onExpire={setUnauthorized} />
             </Route>
           </Switch>
         </main>

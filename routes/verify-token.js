@@ -17,7 +17,7 @@ const verifyToken = async (req, res, next) => {
     req.user = verified;
     next();
   } catch (error) {
-    return res.status(400).json({ message: 'Api key no es válido' });
+    return res.status(401).json({ message: 'Api key no es válido' });
   }
 }
 

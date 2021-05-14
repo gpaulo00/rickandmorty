@@ -1,6 +1,7 @@
 import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
@@ -48,22 +49,26 @@ class SignIn extends React.Component {
       email: '',
       pass: '',
       loading: false,
-      errorMsg: null,
+      errorMsg: this.props.status === "AUTH" ? "Sesión expirada" : null,
+      register: false,
+      registerMsg: null,
     };
 
+    this.setRegister = this.setRegister.bind(this);
     this.handleEmail = this.handleEmail.bind(this);
     this.handlePass = this.handlePass.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
   }
+  setRegister() {
+    this.setState({ register: true });
+  }
   handleEmail(ev) {
     this.setState({
-      ...this.state,
       email: ev.target.value,
     });
   }
   handlePass(ev) {
     this.setState({
-      ...this.state,
       pass: ev.target.value,
     });
   }
@@ -71,32 +76,44 @@ class SignIn extends React.Component {
     // set loading
     ev.preventDefault();
     ev.stopPropagation();
-    this.setState({ ...this.state, loading: true });
+    this.setState({ loading: true });
 
-    // send login request
-    const { email, pass: password } = this.state;
-    axios.post("/api/login", { email, password }, {
+    // send login or signup request
+    const { register, email, pass: password } = this.state;
+    const endpoint = register ? 'signup' : 'login';
+    axios.post(`/api/${endpoint}`, { email, password }, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
     }).then((res) => {
-      this.setState({ ...this.state, loading: false });
-      this.props.setToken(res.data['token']);
+      let registerMsg = null;
+      if (!register) { this.props.setToken(res.data['token']); }
+      else { registerMsg = 'Usuario creado!'; }
+
+      // set state
+      this.setState({
+        loading: false,
+        register: false,
+        registerMsg,
+        email: '',
+        pass: '',
+      });
     }).catch((err) => {
       let message = err.message;
       if (err.response && err.response.data) {
         message = err.response.data.message;
       }
       this.setState({
-        ...this.state,
-        loading: false, errorMsg: message,
+        loading: false,
+        errorMsg: message,
       });
     });
   }
 
   render() {
     const { classes } = this.props;
+    const { register } = this.state;
     const loading = this.state.loading && (
       <Box display="flex" justifyContent="center">
         <CircularProgress color="secondary" />
@@ -105,6 +122,10 @@ class SignIn extends React.Component {
     const errMsg = (
       this.state.errorMsg &&
         <Alert severity="error">{this.state.errorMsg}</Alert>
+    );
+    const registerMsg = (
+      this.state.registerMsg &&
+        <Alert severity="success">{this.state.registerMsg}</Alert>
     );
 
     return (
@@ -115,10 +136,11 @@ class SignIn extends React.Component {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Iniciar Sesión
+            {!register ? 'Inicio de Sesión' : 'Crear Cuenta'}
           </Typography>
           <form className={classes.form} noValidate>
             {errMsg}
+            {registerMsg}
             <TextField
               variant="outlined"
               margin="normal"
@@ -154,12 +176,24 @@ class SignIn extends React.Component {
               className={classes.submit}
               onClick={this.handleLogin}
             >
-              Iniciar Sesión
+              {!register ? 'Iniciar Sesión' : 'Registrarse'}
             </Button>
+
+            {!register && (
+              <Grid container justify="center" alignItems="center" spacing={3}>
+                <Button
+                  color="primary"
+                  disabled={this.props.loading}
+                  onClick={this.setRegister}
+                >
+                  Registrar
+                </Button>
+              </Grid>
+            )}
             {loading}
           </form>
         </div>
-        <Box mt={8}>
+        <Box mt={5}>
           <Copyright />
         </Box>
       </Container>

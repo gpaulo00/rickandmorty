@@ -85,12 +85,12 @@ router.put('/:id', async function(req, res) {
 router.delete('/:id', async function(req, res) {
   const id = req.params.id;
 
-  // update
+  // eliminar
   try {
-    const res = await Location.destroy({ where: { id } });
-    if (res === 1) return res.json({ message: `Location ${id} ha sido eliminado!` });
+    const data = await Location.destroy({ where: { id } });
+    if (data === 1) return res.json({ message: `Lugar ${id} ha sido eliminado!` });
 
-    return res.json({ message: `Location ${id} no existe!` });
+    return res.json({ message: `Lugar ${id} no existe` });
   } catch (err) {
     res.status(500).json({
       message: err.message || 'Ha ocurrido un error',

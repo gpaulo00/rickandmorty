@@ -68,6 +68,9 @@ class Episodes extends React.Component {
       });
     } catch (err) {
       let message = err.message;
+      if (err.response && err.response.status === 401) {
+        this.props.onExpire();
+      }
       if (err.response && err.response.data) {
         message = err.response.data.message;
       }
