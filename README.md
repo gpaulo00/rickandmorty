@@ -18,6 +18,19 @@ misma en el archivo `.env`. Puede observar un ejemplo en `.env.example`.
 Luego se deben instalar las dependencias con `yarn`. Para poblar la
 base de datos debe ejecutar el comando `yarn setup`.
 
+## Ejecución
+
+Para ejecutarlo en modo development, debe hacer los siguientes comandos: 
+
+```sh
+# server
+PORT=3001 bin/www &
+
+# client
+cd client/
+yarn start
+```
+
 ## Author
 
 Gustavo Paulo <gustavo.paulo.segura@gmail.com>
