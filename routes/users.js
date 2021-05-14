@@ -75,6 +75,7 @@ router.post('/login', async function(req, res, next) {
   } catch (err) {
     return res.status(404).json({
       message: `No se encontró el usuario "${email}"`,
+      error: err.message,
     });
   }
 });

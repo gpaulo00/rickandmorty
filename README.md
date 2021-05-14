@@ -31,6 +31,18 @@ cd client/
 yarn start
 ```
 
+En producción debe realizar lo siguiente:
+
+```sh
+# compile frontend
+cd client/
+yarn build
+
+# start server
+cd ../
+bin/www
+```
+
 ## Author
 
 Gustavo Paulo <gustavo.paulo.segura@gmail.com>
