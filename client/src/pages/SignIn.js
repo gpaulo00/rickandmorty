@@ -87,18 +87,19 @@ class SignIn extends React.Component {
         'Content-Type': 'application/json',
       },
     }).then((res) => {
-      let registerMsg = null;
-      if (!register) { this.props.setToken(res.data['token']); }
-      else { registerMsg = 'Usuario creado!'; }
-
-      // set state
-      this.setState({
-        loading: false,
-        register: false,
-        registerMsg,
-        email: '',
-        pass: '',
-      });
+      if (!register) {
+        this.props.setToken(res.data['token']);
+        return;
+      } else {
+        // set state
+        this.setState({
+          loading: false,
+          register: false,
+          registerMsg: 'Usuario creado!',
+          email: '',
+          pass: '',
+        });
+      }
     }).catch((err) => {
       let message = err.message;
       if (err.response && err.response.data) {

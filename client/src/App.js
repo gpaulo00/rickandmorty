@@ -89,7 +89,7 @@ function App() {
           <Toolbar />
           <div className={classes.drawerContainer}>
             <List>
-              <Link component={RouterLink} to="/">
+              <Link component={RouterLink} to="/location">
                 <ListItem button>
                   <ListItemIcon><PlaceIcon /></ListItemIcon>
                   <ListItemText primary="Lugares" />
@@ -120,8 +120,11 @@ function App() {
             <Route path="/character">
               <Characters token={token} onExpire={setUnauthorized} />
             </Route>
-            <Route path="/">
+            <Route path="/location">
               <Locations token={token} onExpire={setUnauthorized} />
+            </Route>
+            <Route path="/">
+              Bienvenido a la API Rick & Morty!
             </Route>
           </Switch>
         </main>

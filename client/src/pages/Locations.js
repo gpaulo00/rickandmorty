@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios';
 
+import { Switch, Route, Link as RouterLink, withRouter } from "react-router-dom";
+
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -12,6 +14,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
+import LocationForm from '../components/LocationForm';
 
 const useStyles = (theme) => ({
   pagination: {
@@ -27,7 +31,7 @@ const useStyles = (theme) => ({
   },
 });
 
-class Episodes extends React.Component {
+class Locations extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -141,60 +145,80 @@ class Episodes extends React.Component {
       itemSize = data.info.total;
     }
 
+    const { match } = this.props;
     return (
       <div>
-        <Grid container justify="between" align="center" spacing={3}>
-          <Grid item xs={6}>
-            <Grid container direction="row" justify="flex-start" alignItems="flex-start">
-              <h2>Lugares ({itemSize})</h2>
-            </Grid>
-          </Grid>
-
-          <Grid item xs={6} className={classes.createButton}>
-            <Button variant="contained" color="primary">Nuevo</Button>
-          </Grid>
-        </Grid>
-  
-        {loading && (
-          <Box display="flex" justifyContent="center">
-            <CircularProgress color="secondary" />
-          </Box>
-        )}
-        {errorMsg && (
-          <Alert severity="error">{errorMsg}</Alert>
-        )}
-        {successMsg && (
-          <Alert severity="success">{successMsg}</Alert>
-        )}
-        {pagination}
-        <Grid item xs={12}>
-          <Grid container spacing={3}>
-            {data && data.data.map((item) => (
-              <Grid key={item.id} xs={3} item>
-                <Card>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {item.name}
-                    </Typography>
-                    <Typography color="textSecondary">
-                      {item.type} {item.dimension !== "unknown" && (
-                        <span>en {item.dimension}</span>
-                      )}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small">Editar</Button>
-                    <Button size="small" onClick={() => this._removeItem(item.id) }>Eliminar</Button>
-                  </CardActions>
-                </Card>
+        <Switch>
+          <Route path={`${match.path}/:locationId`}>
+            <LocationForm token={this.props.token} />
+          </Route>
+          <Route path={match.path}>
+            <Grid container spacing={3}>
+              <Grid item xs={6}>
+                <Grid container direction="row" justify="flex-start" alignItems="flex-start">
+                  <h2>Lugares ({itemSize})</h2>
+                </Grid>
               </Grid>
-            ))}
-          </Grid>
-        </Grid>
-        {pagination}
+
+              <Grid item xs={6} className={classes.createButton}>
+                <Button
+                  component={RouterLink}
+                  to={`${match.path}/new`}
+                  variant="contained" color="primary"
+                >
+                  Nuevo
+                </Button>
+              </Grid>
+            </Grid>
+      
+            {loading && (
+              <Box display="flex" justifyContent="center">
+                <CircularProgress color="secondary" />
+              </Box>
+            )}
+            {errorMsg && (
+              <Alert severity="error">{errorMsg}</Alert>
+            )}
+            {successMsg && (
+              <Alert severity="success">{successMsg}</Alert>
+            )}
+            {pagination}
+            <Grid item xs={12}>
+              <Grid container spacing={3}>
+                {data && data.data.map((item) => (
+                  <Grid key={item.id} xs={3} item>
+                    <Card>
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {item.name}
+                        </Typography>
+                        <Typography color="textSecondary">
+                          {item.type} {item.dimension !== "unknown" && (
+                            <span>en {item.dimension}</span>
+                          )}
+                        </Typography>
+                      </CardContent>
+                      <CardActions>
+                        <Button
+                          component={RouterLink}
+                          to={`${match.path}/${item.id}`}
+                          size="small"
+                        >
+                          Editar
+                        </Button>
+                        <Button size="small" onClick={() => this._removeItem(item.id) }>Eliminar</Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+            {pagination}
+          </Route>
+        </Switch>
       </div>
     );
   }
 }
 
-export default withStyles(useStyles, { withTheme: true })(Episodes);
+export default withRouter(withStyles(useStyles, { withTheme: true })(Locations));
